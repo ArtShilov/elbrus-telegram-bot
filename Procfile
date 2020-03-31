@@ -1,2 +1,2 @@
-web: nodemon index.js 
-#web: npm start
+web: npm start
+#web: node index.js 
