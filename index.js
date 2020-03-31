@@ -4,7 +4,14 @@ const env = require("dotenv").config();
 
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
-  polling: true
+  polling: {
+    interval: 300,
+    autoStart: true,
+    params: {
+      timeout: 60,
+    },
+  },
+  badRejection: true,
 });
 
 const globalOptions = {
