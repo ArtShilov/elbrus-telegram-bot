@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG=* nodemon index.js",
+    "start": "DEBUG=* node index.js",
     "dev": "nodemon index.js"
   },
   "engines": {
