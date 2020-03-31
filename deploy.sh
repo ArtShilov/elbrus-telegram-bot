@@ -1,3 +1,5 @@
+#!/bin/sh
+
 git add -A
 git commit -am 'autocommit'
 git push heroku master
