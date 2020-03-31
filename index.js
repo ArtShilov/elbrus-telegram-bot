@@ -11,7 +11,6 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
       timeout: 60,
     },
   },
-  badRejection: true,
 });
 
 const globalOptions = {
@@ -23,12 +22,16 @@ const globalOptions = {
 
 bot.onText(/\/start/, async msg => {
   const chatId = msg.chat.id;
-  await bot.sendMessage(chatId, "Здравствуйте я ElbrusCamp_bot");
-  await bot.sendMessage(
-    chatId,
-    "Какой вид обучения Вам подходит?",
-    globalOptions
-  );
+  try {
+    await bot.sendMessage(chatId, "Здравствуйте я ElbrusCamp_bot");
+    await bot.sendMessage(
+      chatId,
+      "Какой вид обучения Вам подходит?",
+      globalOptions
+    );
+  } catch (err) {
+    console.error('WTF', err);
+  }
 });
 
 /////////////////////////////////////////////////////////////
@@ -55,38 +58,42 @@ bot.onText(/.+/g, async (msg, match) => {
     }
   };
 
-  /////ONLINE////////////////////////////////////////////////////////
-  if (match[0].toLowerCase() === "online") {
-    bot.sendMessage(chatId, "Выберите что Вас инетересует", onlineOptions);
-  }
-  // console.log(msg);
+  try {
+    /////ONLINE////////////////////////////////////////////////////////
+    if (match[0].toLowerCase() === "online") {
+      await bot.sendMessage(chatId, "Выберите что Вас инетересует", onlineOptions);
+    }
+    // console.log(msg);
 
-  if (match[0].toLowerCase() === "цена online курса") {
-    bot.sendMessage(chatId, "150 000 \u20BD", onlineOptions);
-  }
-  if (match[0].toLowerCase() === "длительность online курса") {
-    bot.sendMessage(chatId, "16 недель", onlineOptions);
-  }
-  if (match[0].toLowerCase() === "offline") {
-    bot.sendMessage(chatId, "Выберите что Вас инетересует", offlineOptions);
-  }
-  /////offline////////////////////////////////////////////////////////
-  if (match[0].toLowerCase() === "цена offline курса") {
-    await bot.sendMessage(chatId, "230 000 \u20BD в Москве", offlineOptions);
-    await bot.sendMessage(
-      chatId,
-      "170 000 \u20BD в Санкт-Петербурге",
-      offlineOptions
-    );
-  }
-  if (match[0].toLowerCase() === "длительность offline курса") {
-    bot.sendMessage(chatId, "11 недель", offlineOptions);
-  }
+    if (match[0].toLowerCase() === "цена online курса") {
+      await bot.sendMessage(chatId, "150 000 \u20BD", onlineOptions);
+    }
+    if (match[0].toLowerCase() === "длительность online курса") {
+      await bot.sendMessage(chatId, "16 недель", onlineOptions);
+    }
+    if (match[0].toLowerCase() === "offline") {
+      await bot.sendMessage(chatId, "Выберите что Вас инетересует", offlineOptions);
+    }
+    /////offline////////////////////////////////////////////////////////
+    if (match[0].toLowerCase() === "цена offline курса") {
+      await bot.sendMessage(chatId, "230 000 \u20BD в Москве", offlineOptions);
+      await bot.sendMessage(
+        chatId,
+        "170 000 \u20BD в Санкт-Петербурге",
+        offlineOptions
+      );
+    }
+    if (match[0].toLowerCase() === "длительность offline курса") {
+      await bot.sendMessage(chatId, "11 недель", offlineOptions);
+    }
 
-  /////to Start ////////////////////////////////////////////////////////
-  if (match[0].toLowerCase() === "вернуться в меню") {
-  bot.sendMessage(chatId, "Какой вид обучения Вам подходит?", globalOptions );
-}
+    /////to Start ////////////////////////////////////////////////////////
+    if (match[0].toLowerCase() === "вернуться в меню") {
+      await bot.sendMessage(chatId, "Какой вид обучения Вам подходит?", globalOptions );
+    }
+  } catch (err) {
+    console.error('WTF2', err);
+  }
 });
 
 
