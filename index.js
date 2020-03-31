@@ -44,8 +44,8 @@ bot.onText(/.+/g, async (msg, match) => {
       keyboard: [
         ["Цена online курса","Длительность online курса"],
         ["Вернуться в меню"]
-      ],
-      one_time_keyboard: true
+      ]/* ,
+      one_time_keyboard: true */
     }
   };
   const offlineOptions = {
@@ -53,8 +53,8 @@ bot.onText(/.+/g, async (msg, match) => {
       keyboard: [
         ["Цена offline курса","Длительность offline курса"],
         ["Вернуться в меню"]
-      ],
-      one_time_keyboard: true
+      ]/* ,
+      one_time_keyboard: true */
     }
   };
 
