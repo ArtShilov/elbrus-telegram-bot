@@ -165,7 +165,7 @@ bot.onText(/.+/g, async (msg, match) => {
         );
         await bot.sendMessage(
           chatId,
-          "Напиши нам в WatsApp или позвони по этому номеру:",
+          "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
           contactChooseOfflineCityOptions
         );
         await bot.sendMessage(
@@ -205,7 +205,7 @@ bot.onText(/.+/g, async (msg, match) => {
         );
         await bot.sendMessage(
           chatId,
-          "Напиши нам в WatsApp или позвони по этому номеру:",
+          "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
           contactChooseOfflineCityOptions
         );
         await bot.sendMessage(
