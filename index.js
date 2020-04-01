@@ -101,17 +101,17 @@ bot.onText(/.+/g, async (msg, match) => {
           chatId,
           "84957860581",
           "ElbrusBootCamp",
-          contactChooseOfflineCityOptions
+          onlineOptions
         );
         await bot.sendMessage(
           chatId,
           "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
-          contactChooseOfflineCityOptions
+          onlineOptions
         );
         await bot.sendMessage(
           chatId,
           "Или напиши нам в телеграм @elbrus_bootcamp",
-          contactChooseOfflineCityOptions
+          onlineOptions
         );
       } catch (error) {
        
@@ -119,17 +119,17 @@ bot.onText(/.+/g, async (msg, match) => {
           await bot.sendMessage(
             chatId,
             "Напиши нам в WatsApp или позвони по этому номеру:",
-            contactChooseOfflineCityOptions
+            onlineOptions
           );
           await bot.sendMessage(
             chatId,
             "89112816062",
-            contactChooseOfflineCityOptions
+            onlineOptions
           );
           await bot.sendMessage(
             chatId,
             "Или напиши нам в телеграм @elbrus_bootcamp",
-            contactChooseOfflineCityOptions
+            onlineOptions
           );
         }
       }
