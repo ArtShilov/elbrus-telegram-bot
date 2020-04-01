@@ -42,7 +42,7 @@ bot.onText(/.+/g, async (msg, match) => {
     reply_markup: {
       keyboard: [
         ["Цена online курса", "Длительность online курса"],
-        ["Как проходит online обучение?"],
+        ["Как проходит online обучение?", "Контакты online курса"],
         ["Вернуться в меню"]
       ] /* ,
       one_time_keyboard: true */
@@ -94,6 +94,45 @@ bot.onText(/.+/g, async (msg, match) => {
 
     if (match[0].toLowerCase() === "цена online курса") {
       await bot.sendMessage(chatId, "150 000 \u20BD", onlineOptions);
+    }
+    if (match[0].toLowerCase() === "контакты online курса") {
+      try {
+        await bot.sendContact(
+          chatId,
+          "84957860581",
+          "ElbrusBootCamp",
+          contactChooseOfflineCityOptions
+        );
+        await bot.sendMessage(
+          chatId,
+          "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
+          contactChooseOfflineCityOptions
+        );
+        await bot.sendMessage(
+          chatId,
+          "Или напиши нам в телеграм @elbrus_bootcamp",
+          contactChooseOfflineCityOptions
+        );
+      } catch (error) {
+       
+        if (error.response.body.error_code === 429) {
+          await bot.sendMessage(
+            chatId,
+            "Напиши нам в WatsApp или позвони по этому номеру:",
+            contactChooseOfflineCityOptions
+          );
+          await bot.sendMessage(
+            chatId,
+            "89112816062",
+            contactChooseOfflineCityOptions
+          );
+          await bot.sendMessage(
+            chatId,
+            "Или напиши нам в телеграм @elbrus_bootcamp",
+            contactChooseOfflineCityOptions
+          );
+        }
+      }
     }
     if (match[0].toLowerCase() === "длительность online курса") {
       await bot.sendMessage(chatId, "16 недель", onlineOptions);
