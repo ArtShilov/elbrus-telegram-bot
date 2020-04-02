@@ -213,7 +213,7 @@ bot.onText(/.+/g, async (msg, match) => {
           contactChooseOfflineCityOptions
         );
       } catch (error) {
-        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', error.response.body.error_code);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME', error.response.body.parameters);
 
         if (error.response.body.error_code === 429) {
           await bot.sendMessage(
@@ -254,6 +254,8 @@ bot.onText(/.+/g, async (msg, match) => {
         );
       } catch (error) {
         if (error.response.body.error_code === 429) {
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME', error.response.body.parameters);
+
           await bot.sendMessage(
             chatId,
             "Напиши нам в WatsApp или позвони по этому номеру:",
