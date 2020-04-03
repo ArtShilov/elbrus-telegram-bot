@@ -111,25 +111,34 @@ bot.onText(/.+/g, async (msg, match) => {
       );
     }
     if (match[0].toLowerCase() === "facebook") {
-      await bot.sendMessage(chatId, `https://www.facebook.com/elbrusbootcamp`, {
-        disable_web_page_preview: true /* ссылка без описания */,
-        disable_notification: true /* выключает звук и нотификацию */
-      });
+      await bot.sendMessage(
+        chatId,
+        `https://www.facebook.com/elbrusbootcamp`
+        // , {
+        //   disable_web_page_preview: true /* ссылка без описания */,
+        //   disable_notification: true /* выключает звук и нотификацию */
+        // }
+      );
     }
     if (match[0].toLowerCase() === "vk") {
-      await bot.sendMessage(chatId, `https://vk.com/elbrusbootcamp`, {
-        disable_web_page_preview: true /* ссылка без описания */,
-        disable_notification: true /* выключает звук и нотификацию */
-      });
+      await bot.sendMessage(
+        chatId,
+        `https://vk.com/elbrusbootcamp`
+        // , {
+        //   disable_web_page_preview: true /* ссылка без описания */,
+        //   disable_notification: true /* выключает звук и нотификацию */
+        // }
+      );
     }
     if (match[0].toLowerCase() === "instagram") {
       await bot.sendMessage(
         chatId,
-        `https://www.instagram.com/elbrus.bootcamp/`,
-        {
-          disable_web_page_preview: true /* ссылка без описания */,
-          disable_notification: true /* выключает звук и нотификацию */
-        }
+        `https://www.instagram.com/elbrus.bootcamp/`
+        // ,
+        // {
+        //   disable_web_page_preview: true /* ссылка без описания */,
+        //   disable_notification: true /* выключает звук и нотификацию */
+        // }
       );
     }
 
