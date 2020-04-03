@@ -14,7 +14,7 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
 
 const globalOptions = {
   reply_markup: {
-    keyboard: [["online"], ["offline"]],
+    keyboard: [["online","offline"], ["Соц. сети"]],
     one_time_keyboard: true
   }
 };
@@ -58,6 +58,16 @@ bot.onText(/.+/g, async (msg, match) => {
       one_time_keyboard: true */
     }
   };
+  const socialNetworksOptions = {
+    reply_markup: {
+      keyboard: [
+        ["Наш сайт", "Facebook"],
+        ["Instagram", "VK"],
+        ["Вернуться в меню"]
+      ] /* ,
+      one_time_keyboard: true */
+    }
+  };
   const contactChooseOfflineCityOptions = {
     reply_markup: {
       keyboard: [
@@ -82,6 +92,41 @@ bot.onText(/.+/g, async (msg, match) => {
   };
 
   try {
+    /////socialNetworks////////////////////////////////////////////////////////
+    if (match[0].toLowerCase() === "наш сайт") {
+      await bot.sendMessage(
+        chatId,
+        `https://elbrusboot.camp/`
+//         ,{
+//   disable_web_page_preview:true,/* ссылка без описания */
+//   disable_notification:true /* выключает звук и нотификацию */
+// }
+);
+if (match[0].toLowerCase() === "facebook") {
+  await bot.sendMessage(
+    chatId,
+    `https://www.facebook.com/elbrusbootcamp`,{
+disable_web_page_preview:true,/* ссылка без описания */
+disable_notification:true /* выключает звук и нотификацию */
+});
+if (match[0].toLowerCase() === "vk") {
+  await bot.sendMessage(
+    chatId,
+    `https://vk.com/elbrusbootcamp`,{
+disable_web_page_preview:true,/* ссылка без описания */
+disable_notification:true /* выключает звук и нотификацию */
+});
+if (match[0].toLowerCase() === "instagram") {
+  await bot.sendMessage(
+    chatId,
+    `https://www.instagram.com/elbrus.bootcamp/`,{
+disable_web_page_preview:true,/* ссылка без описания */
+disable_notification:true /* выключает звук и нотификацию */
+});
+
+
+
+
     /////ONLINE////////////////////////////////////////////////////////
     if (match[0].toLowerCase() === "online") {
       await bot.sendMessage(
