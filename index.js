@@ -14,7 +14,7 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
 
 const globalOptions = {
   reply_markup: {
-    keyboard: [["online","offline"], ["Соц. сети"]],
+    keyboard: [["online", "offline"], ["Соц. сети"]],
     one_time_keyboard: true
   }
 };
@@ -97,35 +97,34 @@ bot.onText(/.+/g, async (msg, match) => {
       await bot.sendMessage(
         chatId,
         `https://elbrusboot.camp/`
-//         ,{
-//   disable_web_page_preview:true,/* ссылка без описания */
-//   disable_notification:true /* выключает звук и нотификацию */
-// }
-);
-if (match[0].toLowerCase() === "facebook") {
-  await bot.sendMessage(
-    chatId,
-    `https://www.facebook.com/elbrusbootcamp`,{
-disable_web_page_preview:true,/* ссылка без описания */
-disable_notification:true /* выключает звук и нотификацию */
-});
-if (match[0].toLowerCase() === "vk") {
-  await bot.sendMessage(
-    chatId,
-    `https://vk.com/elbrusbootcamp`,{
-disable_web_page_preview:true,/* ссылка без описания */
-disable_notification:true /* выключает звук и нотификацию */
-});
-if (match[0].toLowerCase() === "instagram") {
-  await bot.sendMessage(
-    chatId,
-    `https://www.instagram.com/elbrus.bootcamp/`,{
-disable_web_page_preview:true,/* ссылка без описания */
-disable_notification:true /* выключает звук и нотификацию */
-});
-
-
-
+        //         ,{
+        //   disable_web_page_preview:true,/* ссылка без описания */
+        //   disable_notification:true /* выключает звук и нотификацию */
+        // }
+      );
+    }
+    if (match[0].toLowerCase() === "facebook") {
+      await bot.sendMessage(chatId, `https://www.facebook.com/elbrusbootcamp`, {
+        disable_web_page_preview: true /* ссылка без описания */,
+        disable_notification: true /* выключает звук и нотификацию */
+      });
+    }
+    if (match[0].toLowerCase() === "vk") {
+      await bot.sendMessage(chatId, `https://vk.com/elbrusbootcamp`, {
+        disable_web_page_preview: true /* ссылка без описания */,
+        disable_notification: true /* выключает звук и нотификацию */
+      });
+    }
+    if (match[0].toLowerCase() === "instagram") {
+      await bot.sendMessage(
+        chatId,
+        `https://www.instagram.com/elbrus.bootcamp/`,
+        {
+          disable_web_page_preview: true /* ссылка без описания */,
+          disable_notification: true /* выключает звук и нотификацию */
+        }
+      );
+    }
 
     /////ONLINE////////////////////////////////////////////////////////
     if (match[0].toLowerCase() === "online") {
@@ -159,18 +158,13 @@ disable_notification:true /* выключает звук и нотификаци
           onlineOptions
         );
       } catch (error) {
-       
         if (error.response.body.error_code === 429) {
           await bot.sendMessage(
             chatId,
             "Напиши нам в WatsApp или позвони по этому номеру:",
             onlineOptions
           );
-          await bot.sendMessage(
-            chatId,
-            "89112816062",
-            onlineOptions
-          );
+          await bot.sendMessage(chatId, "89112816062", onlineOptions);
           await bot.sendMessage(
             chatId,
             "Или напиши нам в телеграм @elbrus_bootcamp",
@@ -258,7 +252,10 @@ disable_notification:true /* выключает звук и нотификаци
           contactChooseOfflineCityOptions
         );
       } catch (error) {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME', error.response.body.parameters);
+        console.log(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME",
+          error.response.body.parameters
+        );
 
         if (error.response.body.error_code === 429) {
           await bot.sendMessage(
@@ -299,7 +296,10 @@ disable_notification:true /* выключает звук и нотификаци
         );
       } catch (error) {
         if (error.response.body.error_code === 429) {
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME', error.response.body.parameters);
+          console.log(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME",
+            error.response.body.parameters
+          );
 
           await bot.sendMessage(
             chatId,
