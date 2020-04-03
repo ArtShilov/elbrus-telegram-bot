@@ -14,7 +14,10 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
 
 const globalOptions = {
   reply_markup: {
-    keyboard: [["online", "offline"], ["соц. сети elbrusBootCamp"]],
+    keyboard: [
+      ["online", "offline"],
+      ["соц. сети elbrusBootCamp", "оставить заявку"]
+    ],
     one_time_keyboard: true
   }
 };
@@ -33,6 +36,8 @@ bot.onText(/\/start/, async msg => {
   }
 });
 
+const requestState = {}; // chatID -> questionIndex
+const requestObjectInfoUser = {};
 /////////////////////////////////////////////////////////////
 bot.onText(/.+/g, async (msg, match) => {
   // console.log('match ',match);
@@ -46,6 +51,24 @@ bot.onText(/.+/g, async (msg, match) => {
         ["Вернуться в меню"]
       ] /* ,
       one_time_keyboard: true */
+    }
+  };
+  const backToMenuOptions = {
+    reply_markup: {
+      keyboard: [["Вернуться в меню"]] /* ,
+      one_time_keyboard: true */
+    }
+  };
+  const notPromoBackToMenuOptions = {
+    reply_markup: {
+      keyboard: [["Нет промокода"],["Вернуться в меню"]] /* ,
+      one_time_keyboard: true */
+    }
+  };
+  const onlineOfflineOptions = {
+    reply_markup: {
+      keyboard: [["online обучение", "offline обучение"], ["Вернуться в меню"]],
+      one_time_keyboard: true
     }
   };
   const offlineOptions = {
@@ -92,6 +115,222 @@ bot.onText(/.+/g, async (msg, match) => {
   };
 
   try {
+    /////request////////////////////////////////////////////////////////
+    // const questionNumber = 0;
+    const questions = [
+      "Ваше имя?",
+      "Какой вид обучения вам подходит? Выберите из списка",
+      "Ваш номер телефона",
+      "Ваш email",
+      "Напишите Ваш промокод, если его нет нажмите на кнопку "
+    ];
+    
+    if (match[0].toLowerCase() === "оставить заявку") {
+      await bot.sendMessage(
+        chatId,
+        "Чтобы оставить заявку надо ответить на 4 вопроса или можете вернуться в меню",
+        backToMenuOptions
+        );
+        
+        requestState[chatId] = 0;
+
+        await bot.sendMessage(chatId, questions[requestState[chatId]]);
+      } else if (typeof requestState[chatId] !== "undefined") {
+      if (requestState[chatId] === 0) {
+        const nameRegExp = new RegExp("^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$","u");
+        // const nameRegExp = new RegExp("^\\s*\\w{1,}\\s*$");
+
+        // console.log('>>>msg.text', msg.text, nameRegExp.test(msg.text));
+
+//request/name/////////////////
+        if (nameRegExp.test(msg.text)) {
+          requestState[chatId] += 1;
+          requestObjectInfoUser.name = msg.text;
+
+          
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            onlineOfflineOptions
+          );
+        } else if (match[0].toLowerCase() === "вернуться в меню") {
+          await bot.sendMessage(
+            chatId,
+            "Вы в меню",
+            globalOptions
+          );
+        } else {
+          await bot.sendMessage(
+            chatId,
+            "Что то пошло не так. Введите ваше имя"
+          );
+          console.error("BAD NAME");
+        }
+      }
+
+//request/training/////////////////
+      else if (requestState[chatId] === 1) {
+        if (match[0].toLowerCase() === "online обучение") {
+          requestState[chatId] += 1;
+          requestObjectInfoUser.training = match[0];
+
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            backToMenuOptions
+          );
+        } else if (match[0].toLowerCase() === "offline обучение") {
+          requestState[chatId] += 1;
+          requestObjectInfoUser.training = match[0];
+          console.log("name & trOFF: ", requestObjectInfoUser);
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            backToMenuOptions
+          );
+        } else if (match[0].toLowerCase() === "вернуться в меню") {
+          await bot.sendMessage(
+            chatId,
+            "Вы в меню",
+            globalOptions
+          );
+        }else {
+          await bot.sendMessage(chatId, "Что то пошло не так");
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            
+          );
+          console.error("BAD of & on msg");
+        }
+      } 
+    
+      
+//request/phone/////////////////
+      else if (requestState[chatId] === 2) {
+        const phoneRegExp = new RegExp("^\\d[\\d\\(\\)\\ -]{4,14}\\d$");
+
+        if (phoneRegExp.test(msg.text)) {
+
+          requestState[chatId] += 1;
+          requestObjectInfoUser.phone = msg.text;
+
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            backToMenuOptions
+          );
+          
+        } else if (match[0].toLowerCase() === "вернуться в меню") {
+          await bot.sendMessage(
+            chatId,
+            "Вы в меню",
+            globalOptions
+          );
+        }else {
+          await bot.sendMessage(chatId, "Наверно у вас ошибка в номере. Попробуйте сначало");
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            
+          );
+          console.error("BAD phone");
+        }
+
+      }
+       
+//request/email/////////////////     
+     
+      else if (requestState[chatId] === 3) {
+        const emailRegExp = new RegExp("^[-a-z0-9!#$%&'*+/=?^_`{|}~]+(\\.[-a-z0-9!#$%&'*+/=?^_`{|}~]+)*@([a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?\\.)*(aero|arpa|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel|[a-z][a-z])$");
+        
+
+        if (emailRegExp.test(msg.text)) {
+         
+          requestState[chatId] += 1;
+          requestObjectInfoUser.email = msg.text;
+
+
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            notPromoBackToMenuOptions
+          );
+          
+        } else if (match[0].toLowerCase() === "вернуться в меню") {
+          await bot.sendMessage(
+            chatId,
+            "Вы в меню",
+            globalOptions
+          );
+        }else {
+          await bot.sendMessage(chatId, "Наверно у вас ошибка в email. Попробуйте сначало");
+          await bot.sendMessage(
+            chatId,
+            questions[requestState[chatId]],
+            
+          );
+          console.error("BAD email");
+        }
+      }
+
+//request/promo/////////////////     
+     
+      else if (requestState[chatId] === 4) {
+        if (msg.text) {
+          requestObjectInfoUser.promo = msg.text;
+          console.log(requestObjectInfoUser);
+          
+/* ///////////////////////////////логика CRM здесь */
+          delete requestObjectInfoUser
+          delete requestState[chatId];
+          await bot.sendMessage(
+            chatId,
+            "Заявка отправлена",
+            globalOptions
+          );
+          
+        } else if (match[0].toLowerCase() === "вернуться в меню") {
+          await bot.sendMessage(
+            chatId,
+            "Вы в меню",
+            globalOptions
+          );
+        }else if(match[0].toLowerCase() === "нет промокода") {
+          console.log(requestObjectInfoUser);
+          
+          
+          /* ///////////////////////////////логика CRM здесь */
+          
+          
+          delete requestState[chatId];
+          delete requestObjectInfoUser
+          await bot.sendMessage(
+            chatId,
+            "Заявка отправлена",
+            globalOptions
+          );
+        }
+
+       
+
+
+
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     /////socialNetworks////////////////////////////////////////////////////////
     if (match[0].toLowerCase() === "соц. сети elbrusbootcamp") {
       await bot.sendMessage(
