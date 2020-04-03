@@ -14,7 +14,7 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
 
 const globalOptions = {
   reply_markup: {
-    keyboard: [["online", "offline"], ["Соц. сети"]],
+    keyboard: [["online", "offline"], ["соц. сети elbrusboot.camp"]],
     one_time_keyboard: true
   }
 };
@@ -93,6 +93,13 @@ bot.onText(/.+/g, async (msg, match) => {
 
   try {
     /////socialNetworks////////////////////////////////////////////////////////
+    if (match[0].toLowerCase() === "соц. сети elbrusboot.camp") {
+      await bot.sendMessage(
+        chatId,
+        null,
+        socialNetworksOptions
+      );
+    }
     if (match[0].toLowerCase() === "наш сайт") {
       await bot.sendMessage(
         chatId,
