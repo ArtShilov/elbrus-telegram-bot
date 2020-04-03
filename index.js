@@ -198,7 +198,7 @@ bot.onText(/.+/g, async (msg, match) => {
       try {
         await bot.sendContact(
           chatId,
-          "84957860581",
+          "+7 495 786-05-81",
           "ElbrusBootCamp_in_Moscow",
           contactChooseOfflineCityOptions
         );
@@ -238,7 +238,7 @@ bot.onText(/.+/g, async (msg, match) => {
       try {
         await bot.sendContact(
           chatId,
-          "8 911 281-60-62",
+          "+7 911 281-60-62",
           `ElbrusBootCamp in St. Petersburg`,
           contactChooseOfflineCityOptions
         );
