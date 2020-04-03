@@ -99,7 +99,7 @@ bot.onText(/.+/g, async (msg, match) => {
       try {
         await bot.sendContact(
           chatId,
-          "84957860581",
+          "+7 495 786-05-81",
           "ElbrusBootCamp",
           onlineOptions
         );
