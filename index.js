@@ -3,14 +3,16 @@ const debug = require("./helpers");
 const env = require("dotenv").config();
 const nodemailer = require("nodemailer");
 
+
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
-  polling: {
-    interval: 300,
-    autoStart: true,
-    params: {
-      timeout: 60
-    }
-  }
+  polling: true
+  // {
+  //   interval: 300,
+  //   autoStart: true,
+  //   params: {
+  //     timeout: 60
+  //   }
+  // }
 });
 
 //////
@@ -49,6 +51,7 @@ bot.onText(/\/start/, async msg => {
   } catch (err) {
     console.error("WTF", err);
   }
+  
 });
 
 const requestState = {}; // chatID -> questionIndex
@@ -166,8 +169,8 @@ bot.onText(/.+/g, async (msg, match) => {
     } else if (typeof requestState[chatId] !== "undefined") {
       if (requestState[chatId] === 0) {
         const nameRegExp = new RegExp(
-          "^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ][^вернуться в меню]+[a-zA-Zа-яА-Я']?$",
-          "u"
+          "^[a-zA-Zа-яА-ЯёЁ']+(?: [a-zа-яё]+)?$",
+          "i"
         );
         // const nameRegExp = new RegExp("^\\s*\\w{1,}\\s*$");
 
@@ -258,9 +261,7 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/email/////////////////
       else if (requestState[chatId] === 3) {
-        const emailRegExp = new RegExp(
-          "^[-a-z0-9!#$%&'*+/=?^_`{|}~]+(\\.[-a-z0-9!#$%&'*+/=?^_`{|}~]+)*@([a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?\\.)*(aero|arpa|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel|[a-z][a-z])$"
-        );
+        const emailRegExp = new RegExp(".+@.+\..+","i");
 
         if (emailRegExp.test(msg.text)) {
           requestState[chatId] += 1;
@@ -278,7 +279,7 @@ bot.onText(/.+/g, async (msg, match) => {
         } else {
           await bot.sendMessage(
             chatId,
-            "Наверно у вас ошибка в email. Попробуйте написать маленькими буквами"
+            "Наверно у вас ошибка в email. Попробуйте написать еще раз"
           );
           await bot.sendMessage(chatId, questions[requestState[chatId]]);
           console.error("BAD email");
@@ -296,9 +297,20 @@ bot.onText(/.+/g, async (msg, match) => {
             let result = await transporter.sendMail({
               from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
               to: process.env.SEND_MAIL_TOKEN,
-              subject: "Новая заявка от elbrusBot",
-              text:  JSON.stringify(requestObjectInfoUser)
-              /*  html: "This <i>message</i> was sent from <strong>Node js</strong> server." */
+              subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
+              // text:  JSON.stringify(requestObjectInfoUser)
+               html: `<p>
+               Вид обучения: ${requestObjectInfoUser.training}
+               </p>
+               <p>
+               Номер телефона: ${requestObjectInfoUser.phone}
+               </p>
+               <p>
+               Email адрес:  ${requestObjectInfoUser.email}
+               </p> 
+               <p>
+               Промокод: ${requestObjectInfoUser.promo}
+               </p>`
             });
             console.log(result);
             /* ///////////////////////////////логика CRM здесь */
@@ -352,9 +364,20 @@ bot.onText(/.+/g, async (msg, match) => {
             let result = await transporter.sendMail({
               from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
               to: process.env.SEND_MAIL_TOKEN,
-              subject: "Новая заявка от elbrusBot",
-              text:  JSON.stringify(requestObjectInfoUser)
-              /*  html: "This <i>message</i> was sent from <strong>Node js</strong> server." */
+              subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
+              // text:  JSON.stringify(requestObjectInfoUser)
+               html: `<p>
+               Вид обучения: ${requestObjectInfoUser.training}
+               </p>
+               <p>
+               Номер телефона: ${requestObjectInfoUser.phone}
+               </p>
+               <p>
+               Email адрес:  ${requestObjectInfoUser.email}
+               </p> 
+               <p>
+               Промокод: ${requestObjectInfoUser.promo}
+               </p>`
             });
             console.log(result);
             /* ///////////////////////////////логика CRM здесь */
