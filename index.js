@@ -2,7 +2,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const debug = require("./helpers");
 const env = require("dotenv").config();
 const nodemailer = require("nodemailer");
-
+// const sendEmail = require ('./sendMess');
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
   polling: true
@@ -288,31 +288,37 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/promo/////////////////
       else if (requestState[chatId] === 4) {
+        send = async ()=> {
+          let result = await transporter.sendMail({
+            from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
+            to: process.env.SEND_MAIL_TOKEN,
+            subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
+            // text:  JSON.stringify(requestObjectInfoUser)
+             html: `<p>
+             Вид обучения: ${requestObjectInfoUser.training}
+             </p>
+             <p>
+             Номер телефона: ${requestObjectInfoUser.phone}
+             </p>
+             <p>
+             Email адрес:  ${requestObjectInfoUser.email}
+             </p> 
+             <p>
+             Промокод: ${requestObjectInfoUser.promo}
+             </p>`
+          });
+          console.log(result);
+
+        }
         if (match[0].toLowerCase() === "вернуться в меню") {
           await bot.sendMessage(chatId, "Вы в меню", globalOptions);
         } else if (match[0].toLowerCase() === "нет промокода") {
           try {
             requestObjectInfoUser.promo = msg.text;
             console.log(requestObjectInfoUser);
-            let result = await transporter.sendMail({
-              from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
-              to: process.env.SEND_MAIL_TOKEN,
-              subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
-              // text:  JSON.stringify(requestObjectInfoUser)
-               html: `<p>
-               Вид обучения: ${requestObjectInfoUser.training}
-               </p>
-               <p>
-               Номер телефона: ${requestObjectInfoUser.phone}
-               </p>
-               <p>
-               Email адрес:  ${requestObjectInfoUser.email}
-               </p> 
-               <p>
-               Промокод: ${requestObjectInfoUser.promo}
-               </p>`
-            });
-            console.log(result);
+
+            send()
+         
             /* ///////////////////////////////логика CRM здесь */
             delete requestObjectInfoUser;
             delete requestState[chatId];
@@ -361,25 +367,7 @@ bot.onText(/.+/g, async (msg, match) => {
           try {
             requestObjectInfoUser.promo = msg.text;
             console.log(requestObjectInfoUser);
-            let result = await transporter.sendMail({
-              from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
-              to: process.env.SEND_MAIL_TOKEN,
-              subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
-              // text:  JSON.stringify(requestObjectInfoUser)
-               html: `<p>
-               Вид обучения: ${requestObjectInfoUser.training}
-               </p>
-               <p>
-               Номер телефона: ${requestObjectInfoUser.phone}
-               </p>
-               <p>
-               Email адрес:  ${requestObjectInfoUser.email}
-               </p> 
-               <p>
-               Промокод: ${requestObjectInfoUser.promo}
-               </p>`
-            });
-            console.log(result);
+            send()
             /* ///////////////////////////////логика CRM здесь */
             delete requestObjectInfoUser;
             delete requestState[chatId];
