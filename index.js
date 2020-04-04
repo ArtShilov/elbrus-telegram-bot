@@ -287,27 +287,9 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/promo/////////////////
       else if (requestState[chatId] === 4) {
-        const send = async () => {
-          let result = await transporter.sendMail({
-            from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
-            to: process.env.SEND_MAIL_TOKEN,
-            subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
-            // text:  JSON.stringify(requestObjectInfoUser)
-            html: `<p>
-             Вид обучения: ${requestObjectInfoUser.training}
-             </p>
-             <p>
-             Номер телефона: ${requestObjectInfoUser.phone}
-             </p>
-             <p>
-             Email адрес:  ${requestObjectInfoUser.email}
-             </p> 
-             <p>
-             Промокод: ${requestObjectInfoUser.promo}
-             </p>`
-          });
-          console.log(result);
-        };
+        // const send = async (infoUser) => {
+
+        // };
         const errContact = async () => {
           delete requestObjectInfoUser;
           delete requestState[chatId];
@@ -356,7 +338,25 @@ bot.onText(/.+/g, async (msg, match) => {
             requestObjectInfoUser.promo = msg.text;
             console.log(requestObjectInfoUser);
 
-            send();
+            let result = await transporter.sendMail({
+              from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
+              to: process.env.SEND_MAIL_TOKEN,
+              subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
+              // text:  JSON.stringify(requestObjectInfoUser)
+              html: `<p>
+             Вид обучения: ${requestObjectInfoUser.training}
+             </p>
+             <p>
+             Номер телефона: ${requestObjectInfoUser.phone}
+             </p>
+             <p>
+             Email адрес:  ${requestObjectInfoUser.email}
+             </p> 
+             <p>
+             Промокод: ${requestObjectInfoUser.promo}
+             </p>`
+            });
+            console.log(result);
 
             /* ///////////////////////////////логика CRM здесь */
             delete requestObjectInfoUser;
@@ -369,7 +369,25 @@ bot.onText(/.+/g, async (msg, match) => {
           try {
             requestObjectInfoUser.promo = msg.text;
             console.log(requestObjectInfoUser);
-            send();
+            let result = await transporter.sendMail({
+              from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
+              to: process.env.SEND_MAIL_TOKEN,
+              subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
+              // text:  JSON.stringify(requestObjectInfoUser)
+              html: `<p>
+             Вид обучения: ${requestObjectInfoUser.training}
+             </p>
+             <p>
+             Номер телефона: ${requestObjectInfoUser.phone}
+             </p>
+             <p>
+             Email адрес:  ${requestObjectInfoUser.email}
+             </p> 
+             <p>
+             Промокод: ${requestObjectInfoUser.promo}
+             </p>`
+            });
+            console.log(result);
             /* ///////////////////////////////логика CRM здесь */
             delete requestObjectInfoUser;
             delete requestState[chatId];
