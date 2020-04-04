@@ -51,7 +51,6 @@ bot.onText(/\/start/, async msg => {
   } catch (err) {
     console.error("WTF", err);
   }
-  
 });
 
 const requestState = {}; // chatID -> questionIndex
@@ -261,7 +260,7 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/email/////////////////
       else if (requestState[chatId] === 3) {
-        const emailRegExp = new RegExp(".+@.+\..+","i");
+        const emailRegExp = new RegExp(".+@.+..+", "i");
 
         if (emailRegExp.test(msg.text)) {
           requestState[chatId] += 1;
@@ -288,13 +287,13 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/promo/////////////////
       else if (requestState[chatId] === 4) {
-        send = async ()=> {
+        const send = async () => {
           let result = await transporter.sendMail({
             from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
             to: process.env.SEND_MAIL_TOKEN,
             subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
             // text:  JSON.stringify(requestObjectInfoUser)
-             html: `<p>
+            html: `<p>
              Вид обучения: ${requestObjectInfoUser.training}
              </p>
              <p>
@@ -308,8 +307,48 @@ bot.onText(/.+/g, async (msg, match) => {
              </p>`
           });
           console.log(result);
+        };
+        const errContact = async () => {
+          delete requestObjectInfoUser;
+          delete requestState[chatId];
+          await bot.sendMessage(
+            chatId,
+            "Sorry, ошибка на сервере, попробуйте связаться с нами"
+          );
+          try {
+            await bot.sendContact(
+              chatId,
+              "+7 495 786-05-81",
+              "ElbrusBootCamp",
+              globalOptions
+            );
+            await bot.sendMessage(
+              chatId,
+              "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
+              globalOptions
+            );
+            await bot.sendMessage(
+              chatId,
+              "Или напиши нам в телеграм @elbrus_bootcamp",
+              globalOptions
+            );
+          } catch (error) {
+            if (error.response.body.error_code === 429) {
+              await bot.sendMessage(
+                chatId,
+                "Напиши нам в WatsApp или позвони по этому номеру:",
+                globalOptions
+              );
+              await bot.sendMessage(chatId, "89112816062", globalOptions);
+              await bot.sendMessage(
+                chatId,
+                "Или напиши нам в телеграм @elbrus_bootcamp",
+                globalOptions
+              );
+            }
+          }
+        };
 
-        }
         if (match[0].toLowerCase() === "вернуться в меню") {
           await bot.sendMessage(chatId, "Вы в меню", globalOptions);
         } else if (match[0].toLowerCase() === "нет промокода") {
@@ -317,100 +356,26 @@ bot.onText(/.+/g, async (msg, match) => {
             requestObjectInfoUser.promo = msg.text;
             console.log(requestObjectInfoUser);
 
-            send()
-         
+            send();
+
             /* ///////////////////////////////логика CRM здесь */
             delete requestObjectInfoUser;
             delete requestState[chatId];
             await bot.sendMessage(chatId, "Заявка отправлена", globalOptions);
           } catch (err) {
-            delete requestObjectInfoUser;
-            delete requestState[chatId];
-            await bot.sendMessage(
-              chatId,
-              "Sorry, ошибка на сервере, попробуйте связаться с нами"
-            );
-            try {
-              await bot.sendContact(
-                chatId,
-                "+7 495 786-05-81",
-                "ElbrusBootCamp",
-                globalOptions
-              );
-              await bot.sendMessage(
-                chatId,
-                "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
-                globalOptions
-              );
-              await bot.sendMessage(
-                chatId,
-                "Или напиши нам в телеграм @elbrus_bootcamp",
-                globalOptions
-              );
-            } catch (error) {
-              if (error.response.body.error_code === 429) {
-                await bot.sendMessage(
-                  chatId,
-                  "Напиши нам в WatsApp или позвони по этому номеру:",
-                  globalOptions
-                );
-                await bot.sendMessage(chatId, "89112816062", globalOptions);
-                await bot.sendMessage(
-                  chatId,
-                  "Или напиши нам в телеграм @elbrus_bootcamp",
-                  globalOptions
-                );
-              }
-            }
+            errContact();
           }
         } else if (msg.text) {
           try {
             requestObjectInfoUser.promo = msg.text;
             console.log(requestObjectInfoUser);
-            send()
+            send();
             /* ///////////////////////////////логика CRM здесь */
             delete requestObjectInfoUser;
             delete requestState[chatId];
             await bot.sendMessage(chatId, "Заявка отправлена", globalOptions);
           } catch (err) {
-            delete requestObjectInfoUser;
-            delete requestState[chatId];
-            await bot.sendMessage(
-              chatId,
-              "Sorry, ошибка на сервере, попробуйте связаться с нами"
-            );
-            try {
-              await bot.sendContact(
-                chatId,
-                "+7 495 786-05-81",
-                "ElbrusBootCamp",
-                globalOptions
-              );
-              await bot.sendMessage(
-                chatId,
-                "Напиши нам в WatsApp или позвони по этому номеру \u2b06",
-                globalOptions
-              );
-              await bot.sendMessage(
-                chatId,
-                "Или напиши нам в телеграм @elbrus_bootcamp",
-                globalOptions
-              );
-            } catch (error) {
-              if (error.response.body.error_code === 429) {
-                await bot.sendMessage(
-                  chatId,
-                  "Напиши нам в WatsApp или позвони по этому номеру:",
-                  globalOptions
-                );
-                await bot.sendMessage(chatId, "89112816062", globalOptions);
-                await bot.sendMessage(
-                  chatId,
-                  "Или напиши нам в телеграм @elbrus_bootcamp",
-                  globalOptions
-                );
-              }
-            }
+            errContact();
           }
         }
       }
