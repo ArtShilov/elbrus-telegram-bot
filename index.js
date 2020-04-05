@@ -441,7 +441,7 @@ bot.onText(/.+/g, async (msg, match) => {
           }
         } else if (msg.text) {
           try {
-            requestObjectInfoUser.promo = msg.text;
+            requestObjectInfoUser.promo = `промокод: ${msg.text}`;
             console.log(requestObjectInfoUser);
             let result = await transporter.sendMail({
               from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
