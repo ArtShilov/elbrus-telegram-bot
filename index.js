@@ -2,7 +2,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const debug = require("./helpers");
 const env = require("dotenv").config();
 const nodemailer = require("nodemailer");
-// const sendEmail = require ('./sendMess');
+const AmoCRM = require("amocrm-js");
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
   polling: true
@@ -41,6 +41,8 @@ const globalOptions = {
 
 bot.onText(/\/start/, async msg => {
   const chatId = msg.chat.id;
+  delete requestObjectInfoUser;
+  delete requestState[chatId];
   try {
     await bot.sendMessage(chatId, "Здравствуйте я ElbrusCamp_bot");
     await bot.sendMessage(
@@ -287,9 +289,6 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/promo/////////////////
       else if (requestState[chatId] === 4) {
-        // const send = async (infoUser) => {
-
-        // };
         const errContact = async () => {
           delete requestObjectInfoUser;
           delete requestState[chatId];
@@ -331,6 +330,81 @@ bot.onText(/.+/g, async (msg, match) => {
           }
         };
 
+        const addContactLeadForAmoCRM = async (obj) => {
+          const crm = new AmoCRM({
+            // логин пользователя в портале, где адрес портала domain.amocrm.ru
+            domain: process.env.DOMAIN_AmoCRM, // может быть указан полный домен вида domain.amocrm.ru, domain.amocrm.com
+            auth: {
+              login: process.env.LOGIN_AmoCRM,
+              hash: process.env.HASH_AmoCRM // API-ключ доступа
+            }
+          });
+          // Вход в портал
+          crm
+            .connect()
+            .then(() => {
+              console.log(`Вход в портал осуществлён`);
+            })
+            .catch(e => {
+              console.log("Ошибка входа", e);
+            });
+
+          // Создать новый контакт (POST-запрос)
+          crm.request
+            .post("/api/v2/contacts", {
+              add: [
+                {
+                  name: obj.name,
+                  // request_id: 143,
+                  created_at: Date.now(),
+                  // leads_id: [
+                  //   "484347"
+                  // ],
+                  tags: `${obj.training},${obj.promo},"bot"`,
+                  custom_fields: [
+                    {
+                      id: 38145,
+                      name: "Телефон",
+                      code: "PHONE",
+                      values: [
+                        {
+                          value: obj.phone,
+                          enum: 84809
+                        }
+                      ],
+                      is_system: true
+                    },
+                    {
+                      id: 38147,
+                      name: "Email",
+                      code: "EMAIL",
+                      values: [
+                        {
+                          value: obj.email,
+                          enum: 84819
+                        }
+                      ],
+                      is_system: true
+                    }
+                  ]
+                }
+              ]
+            })
+            .then(contact => {
+              // console.log("Contatct данные", contact._embedded.items[0].id);
+
+              const lead = new crm.Lead({
+                name: `Заявка от бота`,
+                // responsible_user_id: "957083",
+                tags: `${obj.training},${obj.promo},bot`,
+                contacts_id: [contact._embedded.items[0].id]
+              });
+              lead.save();
+            })
+            .catch(e => {
+              console.log("Произошла ошибка создания lead", e);
+            });
+        };
         if (match[0].toLowerCase() === "вернуться в меню") {
           await bot.sendMessage(chatId, "Вы в меню", globalOptions);
         } else if (match[0].toLowerCase() === "нет промокода") {
@@ -342,7 +416,6 @@ bot.onText(/.+/g, async (msg, match) => {
               from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
               to: process.env.SEND_MAIL_TOKEN,
               subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
-              // text:  JSON.stringify(requestObjectInfoUser)
               html: `<p>
              Вид обучения: ${requestObjectInfoUser.training}
              </p>
@@ -356,9 +429,10 @@ bot.onText(/.+/g, async (msg, match) => {
              Промокод: ${requestObjectInfoUser.promo}
              </p>`
             });
-            console.log(result);
-
-            /* ///////////////////////////////логика CRM здесь */
+            // console.log(result);
+            /* ///////////////////////////////логика CRM здесь down*/
+            addContactLeadForAmoCRM(requestObjectInfoUser)
+             /* ///////////////////////////////логика CRM здесь up*/
             delete requestObjectInfoUser;
             delete requestState[chatId];
             await bot.sendMessage(chatId, "Заявка отправлена", globalOptions);
@@ -373,7 +447,6 @@ bot.onText(/.+/g, async (msg, match) => {
               from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
               to: process.env.SEND_MAIL_TOKEN,
               subject: `Новая заявка от пользователя ${requestObjectInfoUser.name}`,
-              // text:  JSON.stringify(requestObjectInfoUser)
               html: `<p>
              Вид обучения: ${requestObjectInfoUser.training}
              </p>
@@ -388,7 +461,9 @@ bot.onText(/.+/g, async (msg, match) => {
              </p>`
             });
             console.log(result);
-            /* ///////////////////////////////логика CRM здесь */
+            /* ///////////////////////////////логика CRM здесь down*/
+            addContactLeadForAmoCRM(requestObjectInfoUser)
+             /* ///////////////////////////////логика CRM здесь up*/
             delete requestObjectInfoUser;
             delete requestState[chatId];
             await bot.sendMessage(chatId, "Заявка отправлена", globalOptions);
