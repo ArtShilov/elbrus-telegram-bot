@@ -1,8 +1,8 @@
 const TelegramBot = require("node-telegram-bot-api");
-const debug = require("./helpers");
+// const debug = require("./helpers");
 const env = require("dotenv").config();
-const nodemailer = require("nodemailer");
-const AmoCRM = require("amocrm-js");
+const nodemailer = require("nodemailer"); // для почты
+const AmoCRM = require("amocrm-js"); // для CRM
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, {
   polling: true
@@ -15,7 +15,7 @@ const bot = new TelegramBot(process.env.BOT_TOKEN, {
   // }
 });
 
-//////
+////// для почты down
 
 let transporter = nodemailer.createTransport({
   host: "smtp.yandex.ru",
@@ -27,8 +27,9 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-//////
+////// для почты up
 
+////// первые кнопки в боте down
 const globalOptions = {
   reply_markup: {
     keyboard: [
@@ -38,7 +39,9 @@ const globalOptions = {
     one_time_keyboard: true
   }
 };
+////// первые кнопки в боте up
 
+///// при нажатии на /start down
 bot.onText(/\/start/, async msg => {
   const chatId = msg.chat.id;
   delete requestObjectInfoUser;
@@ -54,12 +57,20 @@ bot.onText(/\/start/, async msg => {
     console.error("WTF", err);
   }
 });
+///// при нажатии на /start up
+
+///// переменные для логики оставления заявки down
 
 const requestState = {}; // chatID -> questionIndex
-const requestObjectInfoUser = {
-  /* bot:true */
-};
+const requestObjectInfoUser = {};
+
+///// переменные для логики оставления заявки up
+
+
+
+///// Вся остальная логика кроме заявки работает только через кнопки
 /////////////////////////////////////////////////////////////
+
 bot.onText(/.+/g, async (msg, match) => {
   // console.log('match ',match);
   // console.log('msg ',msg);
@@ -173,25 +184,23 @@ bot.onText(/.+/g, async (msg, match) => {
           "^[a-zA-Zа-яА-ЯёЁ']+(?: [a-zа-яё]+)?$",
           "i"
         );
-        // const nameRegExp = new RegExp("^\\s*\\w{1,}\\s*$");
-
         // console.log('>>>msg.text', msg.text, nameRegExp.test(msg.text));
 
         //request/name/////////////////
 
         if (match[0].toLowerCase() === "вернуться в меню") {
-          delete requestState[chatId];
-          delete requestObjectInfoUser;
+          delete requestState[chatId]; // обязательные условия удаления данных
+          delete requestObjectInfoUser; // обязательные условия удаления данных
 
           await bot.sendMessage(chatId, "Вы в меню", globalOptions);
         } else if (nameRegExp.test(msg.text)) {
-          requestState[chatId] += 1;
-          requestObjectInfoUser.name = msg.text;
+          requestState[chatId] += 1; // чтобы бегать по вопросам
+          requestObjectInfoUser.name = msg.text; // записывает что вводит пользователь
 
           await bot.sendMessage(
-            chatId,
-            questions[requestState[chatId]],
-            onlineOfflineOptions
+            chatId,// куда
+            questions[requestState[chatId]],// какой текст отправить
+            onlineOfflineOptions // какие кнопки включатся
           );
         } else {
           await bot.sendMessage(
@@ -289,7 +298,7 @@ bot.onText(/.+/g, async (msg, match) => {
 
       //request/promo/////////////////
       else if (requestState[chatId] === 4) {
-        const errContact = async () => {
+        const errContact = async () => { // при ошибки отправки заявки отправляются эти контакты
           delete requestObjectInfoUser;
           delete requestState[chatId];
           await bot.sendMessage(
@@ -332,14 +341,14 @@ bot.onText(/.+/g, async (msg, match) => {
 
         const addContactLeadForAmoCRM = async (obj) => {
           const crm = new AmoCRM({
-            // логин пользователя в портале, где адрес портала domain.amocrm.ru
+            
             domain: process.env.DOMAIN_AmoCRM, // может быть указан полный домен вида domain.amocrm.ru, domain.amocrm.com
             auth: {
-              login: process.env.LOGIN_AmoCRM,
+              login: process.env.LOGIN_AmoCRM,// логин пользователя в портале, где адрес портала domain.amocrm.ru
               hash: process.env.HASH_AmoCRM // API-ключ доступа
             }
           });
-          // Вход в портал
+          // Вход в портал CRM
           crm
             .connect()
             .then(() => {
@@ -391,6 +400,7 @@ bot.onText(/.+/g, async (msg, match) => {
               ]
             })
             .then(contact => {
+              // создает сделку
               // console.log("Contatct данные", contact._embedded.items[0].id);
 
               const lead = new crm.Lead({
@@ -406,11 +416,13 @@ bot.onText(/.+/g, async (msg, match) => {
             });
         };
         if (match[0].toLowerCase() === "вернуться в меню") {
+          delete requestObjectInfoUser;
+          delete requestState[chatId];
           await bot.sendMessage(chatId, "Вы в меню", globalOptions);
         } else if (match[0].toLowerCase() === "нет промокода") {
           try {
             requestObjectInfoUser.promo = msg.text;
-            console.log(requestObjectInfoUser);
+            // console.log(requestObjectInfoUser);
 
             let result = await transporter.sendMail({
               from: `"elbrusBot" <${process.env.YANAME_TOKEN}>`,
@@ -679,8 +691,8 @@ bot.onText(/.+/g, async (msg, match) => {
           "Или напиши нам в телеграм @elbrus_bootcamp",
           contactChooseOfflineCityOptions
         );
-      } catch (error) {
-        if (error.response.body.error_code === 429) {
+      } catch (error) {// возникает ошибка при частой отправки КОНТАКТА (наверно защита от спама от бота)
+        if (error.response.body.error_code === 429) { //обработал отправкой просто сообщений с номерами телефонов
           console.log(
             ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TIME",
             error.response.body.parameters
