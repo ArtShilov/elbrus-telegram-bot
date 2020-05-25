@@ -1,6 +1,6 @@
 # elbrus-telegram-bot
 
-@elbrusBottest_bot
+@elbrus_bootcamp_bot
 
 
 Procfile обязательный файл. Там настройка для Heroku, без него не будет работать бот 24\7. 
