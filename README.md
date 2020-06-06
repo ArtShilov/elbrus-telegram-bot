@@ -1,4 +1,4 @@
-# [telegram](https://teleg.one/elbrus_bootcamp_bot)
+# [elbrus-telegram-bot](https://teleg.one/elbrus_bootcamp_bot)
 
 ## О проекте
 Информативный телеграмм бот Elbrus boot camp для сбора заявок
