@@ -1,7 +1,16 @@
-# elbrus-telegram-bot
+# [telegram](@elbrus_bootcamp_bot)
 
-@elbrus_bootcamp_bot
+## О проекте
+Информативный телеграмм бот Elbrus boot camp для сбора заявок
 
+## Запуск
+```
+npm install
+npm start
+```
 
-Procfile обязательный файл. Там настройка для Heroku, без него не будет работать бот 24\7. 
-Чтобы запускать приложение локально, советую программу protonvpn (бесплатно и работает великолепно)
+## Используемый стек технологий
+- telegramm API 
+- Nodemailer
+- AmoCRM API
+
